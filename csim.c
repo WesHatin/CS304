@@ -6,7 +6,7 @@
 
 #include "cachelab.h"
 
-typedef unsigned long long int mem_addr_t;
+typedef unsigned long long int mem_addr;
 
 typedef struct 
 {
@@ -25,7 +25,7 @@ typedef struct
 typedef struct {
 	int last_used;
 	int valid;
-	mem_addr_t tag;
+	mem_addr tag;
 	char *block;
 } set_line;
 
@@ -38,7 +38,7 @@ typedef struct {
 } cache;
 
 
-int verbose;
+int verbose == 0;
 
 long long bit_power(int exponent) 
 {
@@ -174,7 +174,7 @@ cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 		int prev_hits = val.hits;
 
 		int tag_size = (64 - (val.s + val.b));
-		mem_addr_t input_tag = address >> (val.s + val.b);
+		mem_addr input_tag = address >> (val.s + val.b);
 		unsigned long long temp = address << (tag_size);
 		unsigned long long setIndex = temp >> (tag_size + val.b);
 		
@@ -240,16 +240,12 @@ cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 int main(int argc, char **argv)
 {
   cache sim_cache;
-  cache_param_t val;
+  cache_values val;
   bzero(&val, sizeof(val));
-
-  long long num_sets;
-  long long block_size;	
-
 
   FILE *read_trace;
   char trace_cmd;
-  mem_addr_t address;
+  mem_addr address;
   int size;
   
   char *trace_file;
@@ -310,13 +306,25 @@ int main(int argc, char **argv)
 					break;
 				case 'L':
 					val = run_sim(sim_cache, val, address);
+					if (verbose == 1)
+					{
+						printf(" %c %llx,%d", trace_cmd, address, size);
+					}
 					break;
 				case 'S':
 					val = run_sim(sim_cache, val, address);
+					if (verbose == 1)
+					{
+						printf(" %c %llx,%d", trace_cmd, address, size);
+					}
 					break;
 				case 'M':
 					val = run_sim(sim_cache, val, address);
 					val = run_sim(sim_cache, val, address);	
+					if (verbose == 1)
+					{
+						printf(" %c %llx,%d", trace_cmd, address, size);
+					}
 					break;
 				default:
 					break;
