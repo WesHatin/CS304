@@ -22,18 +22,75 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
-    if (N == 32)
+  int i, j, block_row, block;
+  int dual = 0;
+  int temp = 0;
+	
+  if (N == 32)
+  {
+    for (col_block = 0; col_block < N; col_block += 4) 
     {
-        asdf
+      for (row_block = 0; row_block < N; row_block += 4) 
+      {
+	for (i = row_block; i < row_block + 4; i ++) 
+	{
+	  for (j = col_block; j < col_block + 4; j ++) 
+	  {
+	    if (i != j) 
+	    {
+	      B[j][i] = A[i][j];
+	    }
+	    else {
+	      temp = A[i][j];
+	      dual = i;
+	    }
+	  }
+	  
+	  if (row_block == col_block) 
+	  {
+	    B[dual][dual] = temp;
+	  }
+	}				
+      }
     }
-    else if (N == 64)
+  }
+  else if (N == 64)
+  {
+    for (col_block = 0; col_block < N; col_block += 32) 
     {
-        asdf
+      for (row_block = 0; row_block < N; row_block += 32) 
+      {
+	for (sub_row_block = row_block; sub_row_block < row_block + 32; sub_row_block += 4)
+	{
+	  for (sub_col_block = col_block; sub_col_block < col_block + 32; sub_col_block += 4)
+	  {
+	    for (j = sub_col_block; j < sub_col_block + 4; j ++) 
+	    {
+	      for (i = sub_row_block; i < sub_row_block + 4; i ++) 
+	      {
+		if (i != j) 
+		{
+		  B[j][i] = A[i][j];
+		}
+		else {
+		  temp = A[i][j];
+		  dual = i;
+		}
+	      }
+	      
+	      if (row_block == col_block) 
+	      {
+		B[dual][dual] = temp;
+	      }
+	    }
+	  }
+	}
+      }
     }
-    else
-    {
-        asdf
-    }
+  }
+  else
+  {
+  }
 }
 
 /* 
@@ -57,22 +114,50 @@ void trans(int M, int N, int A[N][M], int B[M][N])
     }    
 
 }
+
 char trans_rekt_desc[] = "Different scan transpose";
 void trans_rekt(int M, int N, int A[N][M], int B[M][N])
 {
-    int i, j, tmp;
+    int i, j, col_block, row_block, sub_row_block, sub_col_block;
+    int dual = 0;
+    int temp = 0;
 
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < M; j++) {
-            if (i != j)
-            {
-                tmp = A[i][j];
-                B[j][i] = tmp;
-            }
-        }
-    }    
+    {
+    for (col_block = 0; col_block < N; col_block += 32) 
+    {
+      for (row_block = 0; row_block < N; row_block += 32) 
+      {
+	for (sub_row_block = row_block; sub_row_block < row_block + 32; sub_row_block += 16)
+	{
+	  for (sub_col_block = col_block; sub_col_block < col_block + 32; sub_col_block += 16)
+	  {
+	    for (j = sub_col_block; j < sub_col_block + 16; j ++) 
+	    {
+	      for (i = sub_row_block; i < sub_row_block + 16; i ++) 
+	      {
+		if (i != j) 
+		{
+		  B[j][i] = A[i][j];
+		}
+		else {
+		  temp = A[i][j];
+		  dual = i;
+		}
+	      }
+	      
+	      if (row_block == col_block) 
+	      {
+		B[dual][dual] = temp;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }    
 
 }
+
 /*
  * registerFunctions - This function registers your transpose
  *     functions with the driver.  At runtime, the driver will
@@ -87,9 +172,9 @@ void registerFunctions()
 
     /* Register any additional transpose functions */
     registerTransFunction(trans, trans_desc); 
-    
-    registerTransFunction(trans_rekt, trans_rekt_desc); 
 
+    registerTransFunction(trans_rekt, trans_rekt_desc);
+    
 }
 
 /* 
@@ -110,4 +195,5 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N])
     }
     return 1;
 }
+
 
