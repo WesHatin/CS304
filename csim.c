@@ -117,7 +117,7 @@ void clear_cache(cache sim_cache, long long total_sets, int total_lines, long lo
 	}
 }
 
-int find_empty_line(cache_set query_set, cache_param_t val) 
+int find_empty_line(cache_set query_set, cache_values val) 
 {
 	int total_lines = val.E;
 	int index;
@@ -170,7 +170,7 @@ cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 		int lineIndex;
 		int cache_full = 1;
 
-		int total_lines = par.E;
+		int total_lines =val.E;
 		int prev_hits = val.hits;
 
 		int tag_size = (64 - (val.s + val.b));
@@ -268,7 +268,7 @@ int main(int argc, char **argv)
 	  trace_file = optarg;
 	  break;
       case 'v':
-	  verbosity = 1;
+	  verbose = 1;
 	  break;
       case 'h':
 	  printUsage(argv);
