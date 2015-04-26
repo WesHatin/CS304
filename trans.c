@@ -22,6 +22,18 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+    if (N == 32)
+    {
+        asdf
+    }
+    else if (N == 64)
+    {
+        asdf
+    }
+    else
+    {
+        asdf
+    }
 }
 
 /* 
