@@ -74,16 +74,16 @@ cache new_cache(long long num_sets, int total_lines, long long block_size)
 	cache newCache;	
 	cache_set set;
 	set_line line;
-	int setIndex;
+	int index;
 	int lineIndex;
 
 	newCache.sets = (cache_set *) malloc(sizeof(cache_set) * num_sets);
 
-	for (setIndex = 0; setIndex < num_sets; setIndex ++) 
+	for (index = 0; index < num_sets; index ++) 
 	{
 		
 		set.lines =  (set_line *) malloc(sizeof(set_line) * total_lines);
-		newCache.sets[setIndex] = set;
+		newCache.sets[index] = set;
 
 		for (lineIndex = 0; lineIndex < total_lines; lineIndex ++) 
 		{
@@ -102,12 +102,12 @@ cache new_cache(long long num_sets, int total_lines, long long block_size)
 
 void clear_cache(cache sim_cache, long long total_sets, int total_lines, long long block_size) 
 {
-	int setIndex;
+	int index;
 	
 
-	for (setIndex = 0; setIndex < total_sets; setIndex ++) 
+	for (index = 0; index < total_sets; index ++) 
 	{
-		cache_set set = sim_cache.sets[setIndex];
+		cache_set set = sim_cache.sets[index];
 		
 		if (set.lines != NULL) 
 		{	
@@ -180,9 +180,9 @@ cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 		int tag_size = (64 - (val.s + val.b));
 		mem_addr input_tag = address >> (val.s + val.b);
 		unsigned long long temp = address << (tag_size);
-		unsigned long long setIndex = temp >> (tag_size + val.b);
+		unsigned long long index = temp >> (tag_size + val.b);
 		
-  		cache_set query_set = sim_cache.sets[setIndex];
+  		cache_set query_set = sim_cache.sets[index];
 
 		for (lineIndex = 0; lineIndex < total_lines; lineIndex ++) 	{
 			
