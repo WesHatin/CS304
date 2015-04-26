@@ -57,8 +57,8 @@ void trans(int M, int N, int A[N][M], int B[M][N])
     }    
 
 }
-char trans_rekt[] = "Different scan transpose";
-void trans(int M, int N, int A[N][M], int B[M][N])
+char trans_rekt_desc[] = "Different scan transpose";
+void trans_rekt(int M, int N, int A[N][M], int B[M][N])
 {
     int i, j, tmp;
 
@@ -86,7 +86,9 @@ void registerFunctions()
     registerTransFunction(transpose_submit, transpose_submit_desc); 
 
     /* Register any additional transpose functions */
-    registerTransFunction(trans, trans_desc, trans_rekt); 
+    registerTransFunction(trans, trans_desc); 
+    
+    registerTransFunction(trans_rekt, trans_rekt_desc); 
 
 }
 
