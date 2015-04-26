@@ -1,4 +1,8 @@
-/* 
+//
+//Project: trans.c
+//Student: Wesley Hatin (wjhatin)
+
+/*
  * trans.c - Matrix transpose B = A^T
  *
  * Each transpose function must have a prototype of the form:
@@ -195,5 +199,4 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N])
     }
     return 1;
 }
-
 
