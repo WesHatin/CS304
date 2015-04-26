@@ -19,7 +19,7 @@ typedef struct
   int hits;
   int misses;
   int evicts;
-} cache_param_t;
+} cache_values;
 
 
 typedef struct {
@@ -38,12 +38,12 @@ typedef struct {
 } cache;
 
 
-int verbosity;
+int verbose;
 
-long long bit_pow(int exp) 
+long long bit_power(int exponent) 
 {
 	long long result = 1;
-	result = result << exp;
+	result = result << exponent;
 	return result;
 }
 
