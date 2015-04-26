@@ -1,3 +1,7 @@
+//
+//Project: csim.c
+//Student: Wesley Hatin (wjhatin)
+//
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
@@ -117,7 +121,7 @@ void clear_cache(cache sim_cache, long long total_sets, int total_lines, long lo
 	}
 }
 
-int find_empty_line(cache_set query_set, cache_values val) 
+int find_empty_line(cache_set query_set, cache_param_t val) 
 {
 	int total_lines = val.E;
 	int index;
@@ -170,7 +174,7 @@ cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 		int lineIndex;
 		int cache_full = 1;
 
-		int total_lines =val.E;
+		int total_lines = par.E;
 		int prev_hits = val.hits;
 
 		int tag_size = (64 - (val.s + val.b));
@@ -268,7 +272,7 @@ int main(int argc, char **argv)
 	  trace_file = optarg;
 	  break;
       case 'v':
-	  verbose = 1;
+	  verbosity = 1;
 	  break;
       case 'h':
 	  printUsage(argv);
