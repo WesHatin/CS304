@@ -244,7 +244,7 @@ int main(int argc, char **argv)
   bzero(&val, sizeof(val));
 
   FILE *read_trace;
-  char trace_cmd;
+  char trace_type;
   mem_addr address;
   int size;
   
@@ -276,46 +276,45 @@ int main(int argc, char **argv)
       default:
 	  printUsage(argv);
 	  exit(1);
-        }
     }
-
-    if (val.s == 0 || val.E == 0 || val.b == 0 || trace_file == NULL) 
-	{
-        printf("%s: Missing required command line argument\n", argv[0]);
-        printUsage(argv);
-        exit(1);
-    }
-      val.S = pow(2.0, val.s);
-      val.B = bit_pow(val.b);	
-      val.hits = 0;
-      val.misses = 0;
-      val.evicts = 0;
+  }
+  
+  if (val.s == 0 || val.E == 0 || val.b == 0 || trace_file == NULL) 
+  {
+  	printf("%s: Missing required command line argument\n", argv[0]);
+  	printUsage(argv);
+  	exit(1);
+  }
+  val.S = pow(2.0, val.s);
+  val.B = bit_power(val.b);	
+  val.hits = 0;
+  val.misses = 0;
+  val.evicts = 0;
 	
-	sim_cache = new_cache(val.S, val.E, val.B);
+  sim_cache = new_cache(val.S, val.E, val.B);
  	
-	// fill in rest of the simulator routine
-	read_trace  = fopen(trace_file, "r");
+  read_trace  = fopen(trace_file, "r");
 	
-	
-	if (read_trace != NULL) {
-		while (fscanf(read_trace, " %c %llx,%d", &trace_cmd, &address, &size) == 3) {
-
+	if (read_trace != NULL) 
+	{
+		while (fscanf(read_trace, " %c %llx,%d", &trace_type, &address, &size) == 3) 
+		{
 		
-			switch(trace_cmd) {
+			switch(trace_type) {
 				case 'I':
 					break;
 				case 'L':
 					val = run_sim(sim_cache, val, address);
 					if (verbose == 1)
 					{
-						printf(" %c %llx,%d", trace_cmd, address, size);
+						printf(" %c %llx,%d", trace_type, address, size);
 					}
 					break;
 				case 'S':
 					val = run_sim(sim_cache, val, address);
 					if (verbose == 1)
 					{
-						printf(" %c %llx,%d", trace_cmd, address, size);
+						printf(" %c %llx,%d", trace_type, address, size);
 					}
 					break;
 				case 'M':
@@ -323,7 +322,7 @@ int main(int argc, char **argv)
 					val = run_sim(sim_cache, val, address);	
 					if (verbose == 1)
 					{
-						printf(" %c %llx,%d", trace_cmd, address, size);
+						printf(" %c %llx,%d", trace_type, address, size);
 					}
 					break;
 				default:
