@@ -47,9 +47,7 @@ long long bit_power(int exponent)
 	return result;
 }
 
-/*
- * printUsage - Print usage info
- */
+
 void printUsage(char* argv[])
 {
     printf("Usage: %s [-hv] -s <num> -E <num> -b <num> -t <file>\n", argv[0]);
@@ -67,9 +65,8 @@ void printUsage(char* argv[])
 }
 
 
-cache build_cache(long long num_sets, int num_lines, long long block_size) 
+cache new_cache(long long num_sets, int total_lines, long long block_size) 
 {
-
 	cache newCache;	
 	cache_set set;
 	set_line line;
@@ -81,10 +78,10 @@ cache build_cache(long long num_sets, int num_lines, long long block_size)
 	for (setIndex = 0; setIndex < num_sets; setIndex ++) 
 	{
 		
-		set.lines =  (set_line *) malloc(sizeof(set_line) * num_lines);
+		set.lines =  (set_line *) malloc(sizeof(set_line) * total_lines);
 		newCache.sets[setIndex] = set;
 
-		for (lineIndex = 0; lineIndex < num_lines; lineIndex ++) 
+		for (lineIndex = 0; lineIndex < total_lines; lineIndex ++) 
 		{
 			
 			line.last_used = 0;
@@ -99,33 +96,38 @@ cache build_cache(long long num_sets, int num_lines, long long block_size)
 	
 }
 
-void clear_cache(cache sim_cache, long long num_sets, int num_lines, long long block_size) 
+void clear_cache(cache sim_cache, long long total_sets, int total_lines, long long block_size) 
 {
 	int setIndex;
 	
 
-	for (setIndex = 0; setIndex < num_sets; setIndex ++) 
+	for (setIndex = 0; setIndex < total_sets; setIndex ++) 
 	{
 		cache_set set = sim_cache.sets[setIndex];
 		
-		if (set.lines != NULL) {	
+		if (set.lines != NULL) 
+		{	
 			free(set.lines);
 		}
 		
 	} 
-	if (sim_cache.sets != NULL) {
+	if (sim_cache.sets != NULL) 
+	{
 		free(sim_cache.sets);
 	}
 }
 
-int find_empty_line(cache_set query_set, cache_param_t val) {
-	int num_lines = val.E;
+int find_empty_line(cache_set query_set, cache_param_t val) 
+{
+	int total_lines = val.E;
 	int index;
 	set_line line;
 
-	for (index = 0; index < num_lines; index ++) {
+	for (index = 0; index < total_lines; index ++) 
+	{
 		line = query_set.lines[index];
-		if (line.valid == 0) {
+		if (line.valid == 0) 
+		{
 			return index;
 		}
 	}
@@ -133,11 +135,11 @@ int find_empty_line(cache_set query_set, cache_param_t val) {
 	return -1;
 }
 
-int find_evict_line(cache_set query_set, cache_param_t val, int *used_lines) {
+int find_evict_line(cache_set query_set, cache_values val, int *used_lines) {
 	
 	//Returns index of least recently used line.
 	//used_lines[0] gives least recently used line, used_lines[1] gives current lru counter or most recently used line.
-	int num_lines = val.E;
+	int total_lines = val.E;
 	int max_used = query_set.lines[0].last_used;
 	int min_used = query_set.lines[0].last_used;
 	int min_used_index = 0;
@@ -145,7 +147,7 @@ int find_evict_line(cache_set query_set, cache_param_t val, int *used_lines) {
 	set_line line; 
 	int lineIndex;
 
-	for (lineIndex = 1; lineIndex < num_lines; lineIndex ++) {
+	for (lineIndex = 1; lineIndex <total_lines; lineIndex ++) {
 		line = query_set.lines[lineIndex];
 
 		if (min_used > line.last_used) {
@@ -163,12 +165,12 @@ int find_evict_line(cache_set query_set, cache_param_t val, int *used_lines) {
 	return min_used_index;
 }
 
-cache_param_t run_sim(cache sim_cache, cache_param_t val, mem_addr_t address) {
+cache_values run_sim(cache sim_cache, cache_values val, mem_addr address) {
 		
 		int lineIndex;
 		int cache_full = 1;
 
-		int num_lines = par.E;
+		int total_lines = par.E;
 		int prev_hits = val.hits;
 
 		int tag_size = (64 - (val.s + val.b));
@@ -178,7 +180,7 @@ cache_param_t run_sim(cache sim_cache, cache_param_t val, mem_addr_t address) {
 		
   		cache_set query_set = sim_cache.sets[setIndex];
 
-		for (lineIndex = 0; lineIndex < num_lines; lineIndex ++) 	{
+		for (lineIndex = 0; lineIndex < total_lines; lineIndex ++) 	{
 			
 			set_line line = query_set.lines[lineIndex];
 			
@@ -293,7 +295,7 @@ int main(int argc, char **argv)
       val.misses = 0;
       val.evicts = 0;
 	
-	sim_cache = build_cache(val.S, val.E, val.B);
+	sim_cache = new_cache(val.S, val.E, val.B);
  	
 	// fill in rest of the simulator routine
 	read_trace  = fopen(trace_file, "r");
