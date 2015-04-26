@@ -1,8 +1,9 @@
 //
 //Project: trans.c
-//Student: Wesley Hatin (wjhatin)
+//Student: Wesley Hatin
+//
 
-/*
+/* 
  * trans.c - Matrix transpose B = A^T
  *
  * Each transpose function must have a prototype of the form:
@@ -26,19 +27,19 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
-  int i, j, block_row, block;
+  int i, j, block_row, block_col;
   int dual = 0;
   int temp = 0;
 	
   if (N == 32)
   {
-    for (col_block = 0; col_block < N; col_block += 4) 
+    for (block_col = 0; block_col < M; block_col += 8) 
     {
-      for (row_block = 0; row_block < N; row_block += 4) 
+      for (block_row = 0; block_row < N; block_row += 8) 
       {
-	for (i = row_block; i < row_block + 4; i ++) 
+	for (i = block_row; i < block_row + 8; i ++) 
 	{
-	  for (j = col_block; j < col_block + 4; j ++) 
+	  for (j = block_col; j < block_col + 8; j ++) 
 	  {
 	    if (i != j) 
 	    {
@@ -50,7 +51,7 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 	    }
 	  }
 	  
-	  if (row_block == col_block) 
+	  if (block_row == block_col) 
 	  {
 	    B[dual][dual] = temp;
 	  }
@@ -60,33 +61,27 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
   }
   else if (N == 64)
   {
-    for (col_block = 0; col_block < N; col_block += 32) 
+    for (block_col = 0; block_col < M; block_col += 4) 
     {
-      for (row_block = 0; row_block < N; row_block += 32) 
+      for (block_row = 0; block_row < N; block_row += 4) 
       {
-	for (sub_row_block = row_block; sub_row_block < row_block + 32; sub_row_block += 4)
+	for (j = block_col; j < block_col + 4; j ++) 
 	{
-	  for (sub_col_block = col_block; sub_col_block < col_block + 32; sub_col_block += 4)
+	  for (i = block_row; i < block_row + 4; i ++) 
 	  {
-	    for (j = sub_col_block; j < sub_col_block + 4; j ++) 
+	    if (i != j) 
 	    {
-	      for (i = sub_row_block; i < sub_row_block + 4; i ++) 
-	      {
-		if (i != j) 
-		{
-		  B[j][i] = A[i][j];
-		}
-		else {
-		  temp = A[i][j];
-		  dual = i;
-		}
-	      }
-	      
-	      if (row_block == col_block) 
-	      {
-		B[dual][dual] = temp;
-	      }
+	      B[j][i] = A[i][j];
 	    }
+	    else {
+	      temp = A[i][j];
+	      dual = i;
+	    }
+	  }
+	  
+	  if (block_row == block_col) 
+	  {
+	    B[dual][dual] = temp;
 	  }
 	}
       }
@@ -94,6 +89,34 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
   }
   else
   {
+    for (block_col = 0; block_col < M; block_col += 4) 
+    {
+      for (block_row = 0; block_row < N; block_row += 4) 
+      {
+	for (j = block_col; j < block_col + 4; j ++) 
+	{
+	  for (i = block_row; i < block_row + 4; i ++) 
+	  {
+	    if ((j < M) && (i < N))
+	    {
+	      if (i != j) 
+	      {
+		B[j][i] = A[i][j];
+	      }
+	      else {
+		temp = A[i][j];
+		dual = i;
+	      }
+	    }
+	  }
+	  
+	  if (block_row == block_col) 
+	  {
+	    B[dual][dual] = temp;
+	  }
+	}
+      }
+    }
   }
 }
 
@@ -119,7 +142,7 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
-char trans_rekt_desc[] = "Different scan transpose";
+char trans_rekt_desc[] = "Second stage scan transpose";
 void trans_rekt(int M, int N, int A[N][M], int B[M][N])
 {
     int i, j, col_block, row_block, sub_row_block, sub_col_block;
