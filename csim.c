@@ -247,7 +247,7 @@ int main(int argc, char **argv)
   cache_values val;
   bzero(&val, sizeof(val));
 
-  FILE *read_trace;
+  FILE *read_file;
   char trace_type;
   mem_addr address;
   int size;
@@ -297,11 +297,11 @@ int main(int argc, char **argv)
 	
   sim_cache = new_cache(val.S, val.E, val.B);
  	
-  read_trace  = fopen(trace_file, "r");
+  read_file  = fopen(trace_file, "r");
 	
-	if (read_trace != NULL) 
+	if (read_file != NULL) 
 	{
-		while (fscanf(read_trace, " %c %llx,%d", &trace_type, &address, &size) == 3) 
+		while (fscanf(read_file, " %c %llx,%d", &trace_type, &address, &size) == 3) 
 		{
 		
 			switch(trace_type) {
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 	
     printSummary(val.hits, val.misses, val.evicts);
 	clear_cache(sim_cache, val.S, val.E, val.B);
-	fclose(read_trace);
+	fclose(read_file);
 
     return 0;
 }
